@@ -1,8 +1,10 @@
 import './App.css';
 import React from 'react';
-import { ConstructKit, Box, H1, TextInput, Button, Inline } from "@construct-kit/core";
+import { ConstructKit, Box, H1 } from "@construct-kit/core";
 import styled from 'styled-components'
-import ListItems from './components/ListItems.js';
+import ListItems from './components/ListItems';
+import AddItems from './components/AddItems';
+import ChooseComponents from './components/ChooseComponent'
 
 const Container = styled(Box)`
   padding: 1rem;
@@ -18,9 +20,7 @@ const LineWrap = styled(Box)`
   margin-bottom:1.5rem;
 `
 
-const AddButton = styled(Button)`
-  flex:0;
-`
+
 
 class App extends React.Component {
   constructor(props) {
@@ -59,11 +59,11 @@ class App extends React.Component {
     });
   })
 
-  changeValue=((id,event)=>{
+  changeValue = ((id, event) => {
     let list = this.state.list;
-    list.forEach((item)=>{
-      if(item.id===id){
-        item.name=event.target.value
+    list.forEach((item) => {
+      if (item.id === id) {
+        item.name = event.target.value
       }
     })
     this.setState({
@@ -88,11 +88,12 @@ class App extends React.Component {
 
   addItem = (() => {
     let list = this.state.list;
-    let listItem = { id: list[list.length-1].id + 1, isEdit: true, name: this.state.inputText, status: 0 };
+    let listItem = { id: list[list.length - 1].id + 1, isEdit: true, name: this.state.inputText, status: 0 };
     list.push(listItem);
+
     this.setState({
       list: list,
-      inputText:''
+      // inputText: ''
     });
   })
 
@@ -102,7 +103,6 @@ class App extends React.Component {
     list = list.map((items) => {
       items.status = 1
       return (items)
-
     })
     this.setState({
       list: list
@@ -133,6 +133,10 @@ class App extends React.Component {
     });
   })
 
+  submit=(()=>{
+    console.log(this.state.list)
+  })
+
   render() {
     return (
       <div className="App">
@@ -150,31 +154,18 @@ class App extends React.Component {
                 ></ListItems>
               </LineWrap>
               <LineWrap>
-                <Inline inset="0" gap="large" justifyContent="space-between">
-                  <TextInput
-                    label=""
-                    hideLabel
-                    placeholder="What to do today?"
-                    onChange={this.changeInputValue.bind(this)}
-                    value={this.state.inputText}
-                  />
-                  <AddButton onClick={this.addItem.bind(this)} variant="tertiary" sizeVariant="medium">Add</AddButton>
-                </Inline>
+                <AddItems
+                  data={this.state.inputText}
+                  addItem={this.addItem.bind(this)}
+                  changeInputValue={this.changeInputValue.bind(this)}>
+                </AddItems>
               </LineWrap>
-              <Inline inset="0" gap="small" grow={false}>
-                <Button variant="tertiary" sizeVariant="small" onClick={this.selectAll.bind(this)}>
-                  全选
-                </Button>
-                <Button variant="tertiary" sizeVariant="small" onClick={this.selectNone.bind(this)}>
-                  全不选
-                </Button>
-                <Button variant="tertiary" sizeVariant="small" onClick={this.reverseSelect.bind(this)}>
-                  反选
-                </Button>
-                <Button variant="tertiary" sizeVariant="small" onClick={this.reverseSelect.bind(this)}>
-                  submit
-                </Button>
-              </Inline>
+              <ChooseComponents
+                selectAll={this.selectAll.bind(this)}
+                selectNone={this.selectNone.bind(this)}
+                reverseSelect={this.reverseSelect.bind(this)}
+                submit={this.submit.bind(this)}
+              ></ChooseComponents>
             </Container>
           </ConstructKit>
         </header>
