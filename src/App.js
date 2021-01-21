@@ -1,8 +1,9 @@
 import './App.css';
 import React from 'react';
+import { useState } from 'react'
 import { ConstructKit, Box, H1 } from "@construct-kit/core";
 import styled from 'styled-components'
-import ListItems from './components/ListItems';
+import ListWrap from './components/ListWrap';
 import AddItems from './components/AddItems';
 import ChooseComponents from './components/ChooseComponent'
 
@@ -20,158 +21,270 @@ const LineWrap = styled(Box)`
   margin-bottom:1.5rem;
 `
 
+function App() {
+  const [list, setList] = useState([
+    { id: 0, isEdit: true, name: '写代码', status: 0 },
+    { id: 1, isEdit: true, name: '读书', status: 0 },
+    { id: 2, isEdit: true, name: '洗衣服', status: 0 },
+  ]);
 
-
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      list: [
-        { id: 0, isEdit: true, name: '写代码', status: 0 },
-        { id: 1, isEdit: true, name: '读书', status: 0 },
-        { id: 2, isEdit: true, name: '洗衣服', status: 0 },
-      ],
-      inputText: '',
-    }
+  const addToDo = (item) => {
+    let olditems = [...list]
+    olditems.push(item)
+    setList(olditems)
   }
-
-  completeTask = (index) => {
-    let list = this.state.list;
-    list[index].status = list[index].status === 0 ? 1 : 0;
-    this.setState({
-      list: list
-    });
-  }
-
-  changeToSave = (index) => {
-    let list = this.state.list;
-    list[index].isEdit = false;
-    this.setState({
-      list: list
-    });
-  }
-
-  changeToEdit = ((index) => {
-    let list = this.state.list;
-    list[index].isEdit = true;
-    this.setState({
-      list: list
-    });
-  })
-
-  changeValue = ((id, event) => {
-    let list = this.state.list;
-    list.forEach((item) => {
+  const finished = (id) => {
+    let olditems = [...list];
+    olditems = olditems.map((item) => {
       if (item.id === id) {
-        item.name = event.target.value
+        item.status = item.status === 0 ? 1 : 0;
       }
+      return item
     })
-    this.setState({
-      list: list
-    });
-  })
-
-  changeInputValue = ((e) => {
-    this.setState({
-      inputText: e.target.value
-    });
-  })
-
-  delectItem = ((id) => {
-    let list = this.state.list;
-    list.splice(list.findIndex(items => items.id === id), 1);
-    this.setState({
-      list: list
-    });
-  })
-
-
-  addItem = (() => {
-    let list = this.state.list;
-    let listItem = { id: list[list.length - 1].id + 1, isEdit: true, name: this.state.inputText, status: 0 };
-    list.push(listItem);
-
-    this.setState({
-      list: list,
-      // inputText: ''
-    });
-  })
-
-
-  selectAll = (() => {
-    let list = this.state.list;
-    list = list.map((items) => {
-      items.status = 1
-      return (items)
-    })
-    this.setState({
-      list: list
-    });
-  })
-
-  selectNone = (() => {
-    let list = this.state.list;
-    list = list.map((items) => {
-      items.status = 0
-      return (items)
-
-    })
-    this.setState({
-      list: list
-    });
-  })
-
-  reverseSelect = (() => {
-    let list = this.state.list;
-    list = list.map((items) => {
-      items.status = items.status === 0 ? 1 : 0;
-      return (items)
-
-    })
-    this.setState({
-      list: list
-    });
-  })
-
-  submit=(()=>{
-    console.log(this.state.list)
-  })
-
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <ConstructKit>
-            <Container>
-              <Title>TO DO LIST</Title>
-              <LineWrap>
-                <ListItems data={this.state.list}
-                  changeToSave={this.changeToSave.bind(this)}
-                  completeTask={this.completeTask.bind(this)}
-                  changeToEdit={this.changeToEdit.bind(this)}
-                  changeValue={this.changeValue.bind(this)}
-                  delectItem={this.delectItem.bind(this)}
-                ></ListItems>
-              </LineWrap>
-              <LineWrap>
-                <AddItems
-                  data={this.state.inputText}
-                  addItem={this.addItem.bind(this)}
-                  changeInputValue={this.changeInputValue.bind(this)}>
-                </AddItems>
-              </LineWrap>
-              <ChooseComponents
-                selectAll={this.selectAll.bind(this)}
-                selectNone={this.selectNone.bind(this)}
-                reverseSelect={this.reverseSelect.bind(this)}
-                submit={this.submit.bind(this)}
-              ></ChooseComponents>
-            </Container>
-          </ConstructKit>
-        </header>
-      </div>
-    );
+    setList(olditems);
   }
+
+  const delectItem = (id) => {
+    let olditems = [...list];
+    olditems = olditems.filter((item) => {
+      return item.id !== id;
+    })
+    setList(olditems);
+  }
+
+  const changeToSave = (id) => {
+
+    let olditems = [...list];
+    olditems = olditems.map((item) => {
+      if (item.id === id) {
+        item.isEdit = false;
+      }
+      return item
+    })
+    setList(olditems);
+  }
+
+  const changeToEdit = (id, txt) => {
+    let olditems = [...list];
+    olditems = olditems.map((item) => {
+      if (item.id === id) {
+        item.isEdit = true;
+        item.name = txt;
+      }
+      return item
+    })
+    setList(olditems);
+  }
+
+  const selectAll = (() => {
+    let olditems = [...list];
+    olditems = olditems.map((items) => {
+      items.status = 1;
+      return (items);
+    })
+    setList(olditems);
+  })
+
+  const selectNone = (() => {
+    let olditems = [...list];
+    olditems = olditems.map((items) => {
+      items.status = 0;
+      return (items);
+    })
+    setList(olditems);
+  })
+
+  const reverseSelect = (() => {
+    let olditems = [...list];
+    olditems = olditems.map((items) => {
+      items.status = items.status === 0 ? 1 : 0;
+      return (items);
+    })
+    setList(olditems);
+  
+  })
+
+  const submit = (() => {
+    let olditems = [...list];
+    olditems=olditems.filter((item)=>{
+      return item.status===1;
+    })
+    console.log(olditems)
+  })
+
+  return (<div className="App">
+    <header className="App-header">
+      <ConstructKit>
+        <Container>
+          <Title>TO DO LIST</Title>
+          <LineWrap>
+            <ListWrap list={list}
+              finished={finished}
+              delectItem={delectItem}
+              changeToSave={changeToSave}
+              changeToEdit={changeToEdit}
+            ></ListWrap>
+          </LineWrap>
+          <LineWrap>
+            <AddItems
+              list={list}
+              addToDo={addToDo}>
+            </AddItems>
+          </LineWrap>
+          <ChooseComponents
+          selectAll={selectAll}
+          selectNone={selectNone}
+          reverseSelect={reverseSelect}
+          submit={submit}
+          ></ChooseComponents>
+        </Container>
+      </ConstructKit>
+    </header>
+  </div>)
 }
+
+// class App extends React.Component {
+//   constructor(props) {
+//     super(props);
+
+//     this.state = {
+//       list: [
+//         { id: 0, isEdit: true, name: '写代码', status: 0 },
+//         { id: 1, isEdit: true, name: '读书', status: 0 },
+//         { id: 2, isEdit: true, name: '洗衣服', status: 0 },
+//       ],
+//       inputText: '',
+//     }
+//   }
+
+//   completeTask = (index) => {
+//     let list = this.state.list;
+//     list[index].status = list[index].status === 0 ? 1 : 0;
+//     this.setState({
+//       list: list
+//     });
+//   }
+
+//   changeToSave = (index) => {
+//     let list = this.state.list;
+//     list[index].isEdit = false;
+//     this.setState({
+//       list: list
+//     });
+//   }
+
+//   changeToEdit = ((index) => {
+//     let list = this.state.list;
+//     list[index].isEdit = true;
+//     this.setState({
+//       list: list
+//     });
+//   })
+
+//   changeValue = ((id, event) => {
+//     let list = this.state.list;
+//     list.forEach((item) => {
+//       if (item.id === id) {
+//         item.name = event.target.value
+//       }
+//     })
+//     this.setState({
+//       list: list
+//     });
+//   })
+
+//   changeInputValue = ((e) => {
+//     this.setState({
+//       inputText: e.target.value
+//     });
+//   })
+
+//   delectItem = ((id) => {
+//     let list = this.state.list;
+//     list.splice(list.findIndex(items => items.id === id), 1);
+//     this.setState({
+//       list: list
+//     });
+//   })
+
+
+
+
+
+//   selectAll = (() => {
+//     let list = this.state.list;
+//     list = list.map((items) => {
+//       items.status = 1
+//       return (items)
+//     })
+//     this.setState({
+//       list: list
+//     });
+//   })
+
+//   selectNone = (() => {
+//     let list = this.state.list;
+//     list = list.map((items) => {
+//       items.status = 0
+//       return (items)
+
+//     })
+//     this.setState({
+//       list: list
+//     });
+//   })
+
+//   reverseSelect = (() => {
+//     let list = this.state.list;
+//     list = list.map((items) => {
+//       items.status = items.status === 0 ? 1 : 0;
+//       return (items)
+
+//     })
+//     this.setState({
+//       list: list
+//     });
+//   })
+
+//   submit = (() => {
+//     console.log(this.state.list)
+//   })
+
+//   render() {
+//     return (
+//       <div className="App">
+//         <header className="App-header">
+//           <ConstructKit>
+//             <Container>
+//               <Title>TO DO LIST</Title>
+//               <LineWrap>
+//                 <ListItems data={this.state.list}
+//                   changeToSave={this.changeToSave.bind(this)}
+//                   completeTask={this.completeTask.bind(this)}
+//                   changeToEdit={this.changeToEdit.bind(this)}
+//                   changeValue={this.changeValue.bind(this)}
+//                   delectItem={this.delectItem.bind(this)}
+//                 ></ListItems>
+//               </LineWrap>
+//               <LineWrap>
+//                 <AddItems
+//                   data={this.state.inputText}
+//                   addItem={this.addItem.bind(this)}
+//                   changeInputValue={this.changeInputValue.bind(this)}>
+//                 </AddItems>
+//               </LineWrap>
+//               <ChooseComponents
+//                 selectAll={this.selectAll.bind(this)}
+//                 selectNone={this.selectNone.bind(this)}
+//                 reverseSelect={this.reverseSelect.bind(this)}
+//                 submit={this.submit.bind(this)}
+//               ></ChooseComponents>
+//             </Container>
+//           </ConstructKit>
+//         </header>
+//       </div>
+//     );
+//   }
+// }
 
 export default App;

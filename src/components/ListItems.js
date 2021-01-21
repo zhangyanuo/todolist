@@ -1,64 +1,86 @@
 
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { Checkbox, Inline, Stack, TextInput } from "@construct-kit/core";
 
-  const CheckboxContainer = styled.div`
+const CheckboxContainer = styled.div`
   border-bottom:1px solid #eee;
   display:flex;
   justify-content:space-between;
 `
-class ListItems extends React.Component {
 
-  completeTask = (index) => {
-    this.props.completeTask(index);
+function ListItems(props) {
+  const { list: { id, name, isEdit, status }, delectItem, finished, changeToSave, changeToEdit } = props;
+  const inputRef = useRef();
+  const changeStatus = () => {
+    finished(id);
+  }
+  const deleted = () => {
+    delectItem(id);
   }
 
-  changeToSave = (index) => {
-    this.props.changeToSave(index);
+  const editDisplay = () => {
+    changeToSave(id);
   }
 
-  changeToEdit = (index) => {
-    this.props.changeToEdit(index);
+  const saveDisplay = () => {
+    const txt = inputRef.current.value;
+    changeToEdit(id,txt);
   }
 
-  changeValue = ((id,e)=>{
-    this.props.changeValue(id,e);
-  })
+ 
 
-  delectItem = ((id) => {
-    this.props.delectItem(id);
-  })
+  return (
+    <Stack inset="0.33rem" gap="small" key={id}>
+      <CheckboxContainer>
+        {isEdit ?
+          (<Checkbox label={name} checked={status} onChange={changeStatus} />) :
+          (<TextInput ref={inputRef} label="" hideLabel defaultValue={name} ></TextInput>)
+        }
+        <Inline inset="0" gap="small" grow={false}>
+          {isEdit ?
+            (<button onClick={editDisplay} >edit</button>) :
+            (<button onClick={saveDisplay}>save</button>)
+          }
+          <button onClick={deleted}>delete</button>
+        </Inline>
 
-  render() {
+      </CheckboxContainer>
+    </Stack>
+  )
 
-    return (
-      this.props.data.map((items, index) => {
-        return (
-          <Stack inset="0.33rem" gap="small" key={items.id}>
-            <CheckboxContainer>
-              {items.isEdit ?
-                (<Checkbox label={items.name} checked={items.status === 1} onChange={this.completeTask.bind(this, index)} />) :
-                (<TextInput label="" hideLabel value={items.name} onChange={this.changeValue.bind(this,items.id)}></TextInput>)
-              }
-
-              {/* {edit} */}
-              <Inline inset="0" gap="small" grow={false}>
-                {items.isEdit ?
-                  (<button onClick={this.changeToSave.bind(this, index)}>edit</button>) :
-                  (<button onClick={this.changeToEdit.bind(this, index)}>save</button>)
-                }
-                <button onClick={this.delectItem.bind(this, items.id)}>delete</button>
-              </Inline>
-            </CheckboxContainer>
-          </Stack>
-        )
-
-      })
-    )
-  }
 
 }
+
+
+// class ListItems extends React.Component {
+
+//   completeTask = (index) => {
+//     this.props.completeTask(index);
+//   }
+
+//   changeToSave = (index) => {
+//     this.props.changeToSave(index);
+//   }
+
+//   changeToEdit = (index) => {
+//     this.props.changeToEdit(index);
+//   }
+
+//   changeValue = ((id,e)=>{
+//     this.props.changeValue(id,e);
+//   })
+
+//   delectItem = ((id) => {
+//     this.props.delectItem(id);
+//   })
+
+//   render() {
+
+
+//   }
+
+// }
 
 
 export default ListItems;
