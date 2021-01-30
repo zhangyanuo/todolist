@@ -52,35 +52,4 @@ function ListItems(props) {
 
 }
 
-
-// class ListItems extends React.Component {
-
-//   completeTask = (index) => {
-//     this.props.completeTask(index);
-//   }
-
-//   changeToSave = (index) => {
-//     this.props.changeToSave(index);
-//   }
-
-//   changeToEdit = (index) => {
-//     this.props.changeToEdit(index);
-//   }
-
-//   changeValue = ((id,e)=>{
-//     this.props.changeValue(id,e);
-//   })
-
-//   delectItem = ((id) => {
-//     this.props.delectItem(id);
-//   })
-
-//   render() {
-
-
-//   }
-
-// }
-
-
 export default ListItems;
