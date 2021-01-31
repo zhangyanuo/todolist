@@ -109,7 +109,13 @@ function App() {
     olditems = olditems.filter((item) => {
       return item.status === 1;
     })
+    
     console.log(olditems)
+   fetch("http://localhost:8000/")
+        .then(res => res.text())
+        .then(res => {
+          console.log(res)
+        });
   })
 
   return (<div className="App">
