@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
-import { useState } from 'react'
+import axios from "axios";
+import { useState, useEffect } from 'react'
 import { ConstructKit, Box, H1 } from "@construct-kit/core";
 import styled from 'styled-components'
 import ListWrap from './components/ListWrap';
@@ -22,16 +23,19 @@ const LineWrap = styled(Box)`
 `
 
 function App() {
-  const [list, setList] = useState([
-    { id: 0, isEdit: true, name: '写代码', status: 0 },
-    { id: 1, isEdit: true, name: '读书', status: 0 },
-    { id: 2, isEdit: true, name: '洗衣服', status: 0 },
-  ]);
+  const [list, setList] = useState([]);
+
 
   const addToDo = (item) => {
-    let olditems = [...list]
-    olditems.push(item)
-    setList(olditems)
+    axios.post(
+      'http://localhost:8000/addItems', item
+    ).then((res) => {
+      if (res.data.responseText === "添加成功！") {
+        fetchData();
+      }
+    });
+
+
   }
   const finished = (id) => {
     let olditems = [...list];
@@ -42,14 +46,19 @@ function App() {
       return item
     })
     setList(olditems);
+  
   }
 
   const delectItem = (id) => {
-    let olditems = [...list];
-    olditems = olditems.filter((item) => {
-      return item.id !== id;
-    })
-    setList(olditems);
+    axios.post(
+      'http://localhost:8000/delItems', {id:id}
+    ).then((res) => {
+      console.log(res)
+      if (res.data.responseText === "删除成功！") {
+      
+        fetchData();
+      }
+    });
   }
 
   const changeToSave = (id) => {
@@ -65,15 +74,17 @@ function App() {
   }
 
   const changeToEdit = (id, txt) => {
-    let olditems = [...list];
-    olditems = olditems.map((item) => {
-      if (item.id === id) {
-        item.isEdit = true;
-        item.name = txt;
+    let params={
+      id:id,
+      name:txt
+    }
+    axios.post(
+      'http://localhost:8000/saveItems', params
+    ).then((res) => {
+      if (res.data.responseText === "修改成功！") {
+        fetchData();
       }
-      return item
-    })
-    setList(olditems);
+    });
   }
 
   const selectAll = (() => {
@@ -105,18 +116,36 @@ function App() {
   })
 
   const submit = (() => {
-    let olditems = [...list];
-    olditems = olditems.filter((item) => {
-      return item.status === 1;
-    })
+     let olditems = [...list];
+    // olditems = olditems.filter((item) => {
+    //   return item.status === 1;
+    // })
+    // console.log(olditems)
     
-    console.log(olditems)
-   fetch("http://localhost:8000/")
-        .then(res => res.text())
-        .then(res => {
-          console.log(res)
-        });
+    axios.post(
+      'http://localhost:8000/saveStatus', olditems
+    ).then((res) => {
+      if (res.data.responseText === "修改成功！") {
+        fetchData();
+      }
+    });
   })
+
+
+  const fetchData = async () => {
+    const result = await axios(
+      'http://localhost:8000/getList',
+    );
+    console.log(result)
+    setList(result.data);
+
+  };
+  useEffect(() => {
+   
+    fetchData();
+
+  }, [])
+
 
   return (<div className="App">
     <header className="App-header">
